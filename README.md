@@ -12,7 +12,7 @@ Install the plugin.
 Create a mode.
 
 <leader>j|k|h|l to move around buffers
-
+````vimscript
 ' Normal/Insert/Terminal modes
 for mode in ['n','i','t']
 	let subm_keyprefix = '<C-w>'
@@ -28,3 +28,4 @@ for mode in ['n','i','t']
 	silent! call submode#map('b_up/down', mode, '', 'h', subm_keyprefix.'h')
 	silent! call submode#map('b_up/down', mode, '', 'l', subm_keyprefix.'l')
 endfor
+````
