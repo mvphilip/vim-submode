@@ -226,10 +226,9 @@ function! s:define_entering_mapping(submode, mode, options, lhs, rhs)  "{{{2
   execute s:map_command(a:mode, '')
   \       s:map_options('s')
   \       s:named_key_leave(a:submode)
-  \       printf('%s<SID>on_leaving_submode(%s)<Return>',
+  \       printf('<Esc><C-\><C-N>%s<SID>on_leaving_submode(%s)<Return>',
   \              a:mode =~# '[ic]' ? '<C-r>=' : '@=',
   \              string(a:submode))
-
   return
 endfunction
 
@@ -446,21 +445,29 @@ endfunction
 function! s:on_leaving_submode(submode)  "{{{2
   if (s:original_showmode || g:submode_always_show_submode)
   \  && s:may_override_showmode_p(mode())
-    if s:insert_mode_p(mode())
+    if s:insert_mode_p(mode()) || &buftype !=? 'terminal'
       let cursor_position = getpos('.')
     endif
 
+    let cursor_position = getpos('.')
       " BUGS: :redraw! doesn't redraw 'showmode'.
-    execute "normal! \<C-l>"
+    "execute "normal! \<C-l>" # triggers a complete screen refresh
+	normal! :
 
-    if s:insert_mode_p(mode())
-      call setpos('.', cursor_position)
-    endif
+    if &buftype !=? 'terminal'
+		if s:insert_mode_p(mode())
+			call setpos('.', cursor_position)
+		endif
+	else
+		startinsert
+	endif
   endif
   if !g:submode_keep_leaving_key && getchar(1) isnot 0
     " To completely ignore unbound key sequences in a submode,
     " here we have to fetch and drop the last key in the key sequence.
-    call getchar()
+    if &buftype !=? 'terminal'
+		call getchar()
+	endif
   endif
   call s:restore_options()
   return ''
