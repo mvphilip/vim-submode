@@ -465,9 +465,7 @@ function! s:on_leaving_submode(submode)  "{{{2
   if !g:submode_keep_leaving_key && getchar(1) isnot 0
     " To completely ignore unbound key sequences in a submode,
     " here we have to fetch and drop the last key in the key sequence.
-    if &buftype !=? 'terminal'
-		call getchar()
-	endif
+    call getchar()
   endif
   call s:restore_options()
   return ''
